@@ -17,5 +17,9 @@ use App\Http\Controllers\AlumnosController;
 Route::get('/', function () {
     return view('welcome');
 });
-
+//Ruta para obtener todo
 Route::get('/alumnos', [AlumnosController::class, 'index']);
+//Ruta para obtener algo en especifico
+Route::get('/alumnosNumeroControl', [AlumnosController::class, 'show']);
+//Ruta para insertar lo que es algo nuevo
+Route::post('/nuevoAlumno', [AlumnosController::class, 'store']);
