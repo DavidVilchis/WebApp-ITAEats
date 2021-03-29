@@ -84,9 +84,19 @@ class AlumnosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        //Actualizar alumno mediante su número de control
+        $result = DB::table('Alumnos')->where('numeroDeControl', $request->numeroDeControl)
+                ->update(['nombres' => $request->nombres, 'apellidoPaterno' => $request->apellidoPaterno, 
+                        'apellidoMaterno' => $request->apellidoMaterno, 'claveCarrera' => $request->claveCarrera, 
+                        'becaAlimenticia' => $request->becaAlimenticia]);
+        if($result){
+            echo "Se actualizo correctamente";
+        }
+        else{
+            echo "No se actualizo el registro";
+        }
     }
 
     /**
@@ -95,8 +105,15 @@ class AlumnosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        //Borrar alumnos mediante el número de control
+        $result = DB::table('alumnos')->where('numeroDeControl', $request->numeroDeControl)->delete();
+        if($result){
+            echo "Se borro correctamente el registro";
+        }
+        else{
+            echo "No se encontró el registro";
+        }
     }
 }

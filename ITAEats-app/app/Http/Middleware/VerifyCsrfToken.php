@@ -12,6 +12,8 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        'http://localhost/WebApp-ITAEats/ITAEats-app/public/nuevoAlumno'
+        'http://localhost/WebApp-ITAEats/ITAEats-app/public/nuevoAlumno',
+        'http://localhost/WebApp-ITAEats/ITAEats-app/public/eliminarAlumno',
+        'http://localhost/WebApp-ITAEats/ITAEats-app/public/actualizarAlumno'
     ];
 }

@@ -23,3 +23,7 @@ Route::get('/alumnos', [AlumnosController::class, 'index']);
 Route::get('/alumnosNumeroControl', [AlumnosController::class, 'show']);
 //Ruta para insertar lo que es algo nuevo
 Route::post('/nuevoAlumno', [AlumnosController::class, 'store']);
+//Ruta para borrar un registro mediante lo que es un número de control.
+Route::post('/eliminarAlumno',[AlumnosController::class, 'destroy']);
+//Ruta para actualizar un registro mediante lo que es su número de control
+Route::post('/actualizarAlumno',[AlumnosController::class, 'update']);
