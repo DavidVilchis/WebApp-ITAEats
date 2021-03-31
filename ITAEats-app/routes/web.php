@@ -27,3 +27,5 @@ Route::post('/nuevoAlumno', [AlumnosController::class, 'store']);
 Route::post('/eliminarAlumno',[AlumnosController::class, 'destroy']);
 //Ruta para actualizar un registro mediante lo que es su número de control
 Route::post('/actualizarAlumno',[AlumnosController::class, 'update']);
+//Mostrar el token para alumnos
+Route::get('/mostrarToken',[AlumnosController::class, 'showToken']);

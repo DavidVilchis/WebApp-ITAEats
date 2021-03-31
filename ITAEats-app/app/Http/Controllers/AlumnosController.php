@@ -13,6 +13,10 @@ class AlumnosController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function showToken(){
+        echo csrf_token();
+    }
+    
     public function index()
     {
         return Alumnos::all();
