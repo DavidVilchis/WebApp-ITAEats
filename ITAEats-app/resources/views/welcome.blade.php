@@ -6,6 +6,7 @@
         <title>Laravel</title>
         <!-- Styles -->
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
     </head>
     <body>
        <!-- React root DOM -->
@@ -13,5 +14,14 @@
         </div>
         <!-- React JS -->
         <script src="{{ asset('js/app.js') }}" defer></script>
+        <script src="https://unpkg.com/react/umd/react.production.min.js" crossorigin></script>
+
+<script
+  src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"
+  crossorigin></script>
+
+<script
+  src="https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js"
+  crossorigin></script>
     </body>
 </html>
