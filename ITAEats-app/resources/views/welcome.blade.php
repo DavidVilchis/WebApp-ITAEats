@@ -10,7 +10,7 @@
     </head>
     <body>
        <!-- React root DOM -->
-        <div id="example">
+        <div id="home">
         </div>
         <!-- React JS -->
         <script src="{{ asset('js/app.js') }}" defer></script>
