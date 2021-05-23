@@ -1,0 +1,20 @@
+.navbar-style-ui{
+    background-color: rgba(0, 0, 0, 0.8);
+}
+.link-style{
+    color:black;
+}
+.dropdown-style{
+    color:black;
+}
+#cerrar-sesion{
+    color: rgb(160,0,0);
+    font-weight: bold;
+}
+#cerrar-sesion:hover{
+    color: red;
+}
+#navbar-opciones:hover{
+    color:white;
+    font-weight: bold;
+}

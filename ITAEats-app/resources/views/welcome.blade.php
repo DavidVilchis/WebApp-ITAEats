@@ -6,11 +6,13 @@
         <title>Laravel</title>
         <!-- Styles -->
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+        <!-- Linea agregada -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
     </head>
     <body>
        <!-- React root DOM -->
-        <div id="home">
+        <div id="index">
         </div>
         <!-- React JS -->
         <script src="{{ asset('js/app.js') }}" defer></script>

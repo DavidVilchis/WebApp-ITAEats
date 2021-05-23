@@ -120,4 +120,9 @@ class AlumnosController extends Controller
             echo "No se encontró el registro";
         }
     }
+
+    public function iniciarSesion(Request $request){
+        $dataAlumnos = DB::table('alumnos')->where('numeroDeControl', $request->numeroDeControl)->get();
+        return $dataAlumnos;
+    }
 }

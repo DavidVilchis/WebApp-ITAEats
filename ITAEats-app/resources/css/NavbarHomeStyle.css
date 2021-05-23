@@ -1,0 +1,10 @@
+#title-label{
+    padding-top: 20px;
+    font-family: 'Century Gothic';
+    font-weight: bold;
+    cursor:pointer;
+    margin-bottom: 0;
+}
+.navbar-style{
+    background-color: rgba(0, 0, 0, 0.3);
+}

@@ -1,0 +1,16 @@
+body{
+    background-color: rgb(203, 201, 201);
+}
+#body-style{
+    background-color: rgba(0, 0, 0, 0.9);
+    margin-top: 15px;
+    border-radius: 15px;
+    min-height: 80vh;
+}
+#label-bold{
+    font-weight: bold;
+    color: white;
+}
+#label{
+    color:white;
+}

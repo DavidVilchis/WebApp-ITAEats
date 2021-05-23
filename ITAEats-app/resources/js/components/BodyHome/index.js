@@ -1,11 +1,11 @@
 import React from 'react';
 import '../../../css/BodyHomeStyle.css';
 import {Jumbotron, Button} from 'react-bootstrap';
-import Navbar from '../Navbar';
+import Navbar from '../NavbarHome';
 const BodyHome = () => {
     return(
         <>
-        <div className='video-container'>
+        <div className="video-container">
             <video className='video' src='/WebApp-ITAEats/ITAEats-app/resources/video/video-back.mp4' autoPlay loop muted/>
             <Navbar />
             <Jumbotron className="jumbotron">
@@ -18,9 +18,8 @@ const BodyHome = () => {
             </p>
             </Jumbotron>
         </div>
-        
         </>
     );
 };
-
+//
 export default BodyHome;

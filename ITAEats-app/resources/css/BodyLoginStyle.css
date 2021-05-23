@@ -1,0 +1,11 @@
+.title{
+    color: black;
+}
+#container-style{
+    width: 50vh;
+    background-color: rgb(175, 202, 238);
+    opacity: .70;
+    box-shadow: 5px 5px #a8845b;
+    padding: 20px;
+    margin-top: 40px;
+}
