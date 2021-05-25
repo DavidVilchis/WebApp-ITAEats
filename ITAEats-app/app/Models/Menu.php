@@ -15,6 +15,5 @@ class Menu extends Model
         'descripcionDePlatillo',
         'fotoDePlatillo',
         'precio',
-        'disponible'
     ];
 }

@@ -18,8 +18,7 @@ class CreateAlumnosTable extends Migration
             $table->text('nombres');
             $table->text('apellidoPaterno');
             $table->text('apellidoMaterno');
-            $table->string('claveCarrera', 6); 
-            $table->boolean('becaAlimenticia');
+            $table->text('claveCarrera'); 
             $table->timestamps();
         });
     }

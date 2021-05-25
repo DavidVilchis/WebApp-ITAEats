@@ -11,7 +11,7 @@ const BodyProfile = () => {
         (async () => {
             const response = await Axios({
                 method: 'get',
-                url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/alumnosNumeroControl?numeroDeControl=18151716'
+                url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarAlumnos?numeroDeControl='+localStorage.getItem('numeroDeControl')
             })
                 .then(response => {
                     console.log('response.data', response.data)

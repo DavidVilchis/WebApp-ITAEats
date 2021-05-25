@@ -16,8 +16,6 @@ class CreatePedidosTable extends Migration
         Schema::create('pedidos', function (Blueprint $table) {
             $table->integer('idDePlatillo');
             $table->string('numeroDeControl', 8);
-            $table->double('descuento');
-            $table->date('fechaDePedido');
             $table->timestamps();
         });
     }

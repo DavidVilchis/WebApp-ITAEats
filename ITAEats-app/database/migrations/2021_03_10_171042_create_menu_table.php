@@ -17,9 +17,8 @@ class CreateMenuTable extends Migration
             $table->increments('idDePlatillo');
             $table->text('nombreDePlatillo');
             $table->text('descripcionDePlatillo');
-            $table->binary('fotoDePlatillo');
+            $table->text('fotoDePlatillo');
             $table->double('precio');
-            $table->boolean('disponible');
             $table->timestamps();
         });
     }

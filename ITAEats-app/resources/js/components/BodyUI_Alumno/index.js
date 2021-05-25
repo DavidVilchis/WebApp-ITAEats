@@ -38,7 +38,7 @@ const BodyUI = () => {
                                 <CardColumns>
                                     {data.map(dataItem => (
                                         <Card border="dark" style={{ width: '10rem' }} key={dataItem.idDePlatillo}>
-                                            <Card.Img variant="top" src={dataItem.fotoDePlatillo} />
+                                            <Card.Img variant="top" src={"/WebApp-ITAEats/ITAEats-app/resources/images/Platillos/" + dataItem.fotoDePlatillo} />
                                             <Card.Body>
                                                 <Card.Title className="cards-title">{dataItem.nombreDePlatillo}</Card.Title>
                                                 <Card.Text>

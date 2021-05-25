@@ -40,21 +40,7 @@ Route::get('/inicio/cafeteria/alumnos', function (){
     return view('welcome');
 });
 Route::get('/api/mostrarPlatillos', [MenuController::class, 'index']);
-Route::post('/api/agregarPlatillo', [MenuController::class, 'store']);
-
-//Ruta para obtener todo
-Route::get('/alumnos', [AlumnosController::class, 'index']);
-
-//Ruta para obtener algo en especifico
-Route::get('/api/alumnosNumeroControl', [AlumnosController::class, 'show']);
-//Ruta para insertar lo que es algo nuevo
-Route::post('/api/nuevoAlumno', [AlumnosController::class, 'store']);
-Route::get('/api/iniciarSesion', [AlumnosController::class, 'iniciarSesion']);
 
 
-//Ruta para borrar un registro mediante lo que es un número de control.
-Route::post('/eliminarAlumno',[AlumnosController::class, 'destroy']);
-//Ruta para actualizar un registro mediante lo que es su número de control
-Route::post('/actualizarAlumno',[AlumnosController::class, 'update']);
 //Mostrar el token para alumnos
 Route::get('/mostrarToken',[AlumnosController::class, 'showToken']);

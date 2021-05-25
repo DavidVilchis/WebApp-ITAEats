@@ -46,14 +46,9 @@ class MenuController extends Controller
         $menu->descripcionDePlatillo = $request->descripcionDePlatillo;
         $menu->fotoDePlatillo = $request->fotoDePlatillo;
         $menu->precio = $request->precio;
-        $menu->disponible = $request->disponible;
         $result = $menu->save();
-        if($result){
-            echo "Se guardo con exito";
-        }
-        else{
-            echo "No se guardo";
-        }
+        $response['success'] = true;
+        return $response;
     }
 
     /**
@@ -64,9 +59,8 @@ class MenuController extends Controller
      */
     public function show(Request $request)
     {
-        //Obtener lo que es un registro en especifico con un parametro
-        /*$dataAlumnos = DB::table('alumnos')->where('numeroDeControl', $request->numeroDeControl)->get();
-        return $dataAlumnos;*/
+        $dataMenu = DB::table('menu')->where('idDePlatillo', $request->idDePlatillo)->get();
+        return $dataMenu;
     }
 
     /**
@@ -90,16 +84,16 @@ class MenuController extends Controller
     public function update(Request $request)
     {
         //Actualizar alumno mediante su número de control
-        /*$result = DB::table('Alumnos')->where('numeroDeControl', $request->numeroDeControl)
-                ->update(['nombres' => $request->nombres, 'apellidoPaterno' => $request->apellidoPaterno, 
-                        'apellidoMaterno' => $request->apellidoMaterno, 'claveCarrera' => $request->claveCarrera, 
-                        'becaAlimenticia' => $request->becaAlimenticia]);
+        $result = DB::table('menu')->where('idDePlatillo', $request->idDePlatillo)
+                ->update(['nombreDePlatillo' => $request->nombreDePlatillo, 'descripcionDePlatillo' => $request->descripcionDePlatillo, 
+                        'fotoDePlatillo' => $request->fotoDePlatillo, 'precio' => $request->precio]);
         if($result){
-            echo "Se actualizo correctamente";
+            $response['success'] = true;
         }
         else{
-            echo "No se actualizo el registro";
-        }*/
+            $response['success'] = false;
+        }
+        return $response;
     }
 
     /**
@@ -111,12 +105,13 @@ class MenuController extends Controller
     public function destroy(Request $request)
     {
         //Borrar alumnos mediante el número de control
-        /*$result = DB::table('alumnos')->where('numeroDeControl', $request->numeroDeControl)->delete();
+        $result = DB::table('menu')->where('idDePlatillo', $request->idDePlatillo)->delete();
         if($result){
-            echo "Se borro correctamente el registro";
+            $response['success'] = true;
         }
         else{
-            echo "No se encontró el registro";
-        }*/
+            $response['success'] = false;
+        }
+        return $response;
     }
 }

@@ -2,9 +2,14 @@ import React from 'react';
 import '../../../css/NavbarUIStyle.css';
 import {FiLogOut} from 'react-icons/fi';
 import {RiRestaurantLine, RiUserLine, RiRedPacketLine} from 'react-icons/ri';
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import { Form, FormControl, Button, Navbar, Nav, NavDropdown } from 'react-bootstrap';
 const NavbarComponent = () => {
+    let history = useHistory();
+    const logout = async (e) => {
+        localStorage.clear();
+        history.push("/WebApp-ITAEats/ITAEats-app/public/login/cafeteria");
+    }
     return (
         <>
             <div className = "w-100">
@@ -19,7 +24,7 @@ const NavbarComponent = () => {
                         <Nav.Link as = {Link} to = "/WebApp-ITAEats/ITAEats-app/public/inicio/cafeteria" className="link-style" id="navbar-opciones"> <RiRedPacketLine /> Tabla de pedidos </Nav.Link>
                         <Nav.Link as = {Link} to = "/WebApp-ITAEats/ITAEats-app/public/inicio/cafeteria/menu" className="link-style" id="navbar-opciones"><RiRestaurantLine/> Menú de cafetería</Nav.Link>
                         <Nav.Link as = {Link} to = "/WebApp-ITAEats/ITAEats-app/public/inicio/cafeteria/alumnos" className="link-style" id="navbar-opciones"><RiUserLine /> Tabla de alumnos</Nav.Link>
-                        <Nav.Link href="#cerrar" className="link-style" id="cerrar-sesion">Cerrar sesión <FiLogOut/> </Nav.Link>
+                        <Nav.Link onClick={logout} className="link-style" id="cerrar-sesion">Cerrar sesión <FiLogOut/> </Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
