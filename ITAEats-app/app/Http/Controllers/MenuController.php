@@ -47,8 +47,11 @@ class MenuController extends Controller
         $menu->fotoDePlatillo = $request->fotoDePlatillo;
         $menu->precio = $request->precio;
         $result = $menu->save();
-        $response['success'] = true;
-        return $response;
+        return Menu::all();
+    }
+    public function buscar(Request $request){
+        $dataMenu = DB::table('menu')->where('nombreDePlatillo','like',$request->nombreDePlatillo . '%')->get();
+        return $dataMenu;
     }
 
     /**
@@ -88,12 +91,11 @@ class MenuController extends Controller
                 ->update(['nombreDePlatillo' => $request->nombreDePlatillo, 'descripcionDePlatillo' => $request->descripcionDePlatillo, 
                         'fotoDePlatillo' => $request->fotoDePlatillo, 'precio' => $request->precio]);
         if($result){
-            $response['success'] = true;
+            return Menu::all();
         }
         else{
-            $response['success'] = false;
+            return null;
         }
-        return $response;
     }
 
     /**
@@ -107,11 +109,10 @@ class MenuController extends Controller
         //Borrar alumnos mediante el número de control
         $result = DB::table('menu')->where('idDePlatillo', $request->idDePlatillo)->delete();
         if($result){
-            $response['success'] = true;
+            return Menu::all();
         }
         else{
-            $response['success'] = false;
+            return null;
         }
-        return $response;
     }
 }

@@ -26,19 +26,22 @@ Route::post('agregarPlatillo', [MenuController::class, 'store']);
 Route::get('buscarPlatillo', [MenuController::class, 'show']);
 Route::post('editarPlatillo', [MenuController::class, 'update']);
 Route::post('borrarPlatillo', [MenuController::class, 'destroy']);
+Route::get('buscarPlatilloNombre', [MenuController::class, 'buscar']);
 
 Route::post('nuevoAlumno', [AlumnosController::class, 'store']);
 Route::get('alumnos', [AlumnosController::class, 'index']);
 Route::get('buscarAlumnos', [AlumnosController::class, 'show']);
 Route::post('editarAlumnos', [AlumnosController::class, 'update']);
 Route::post('borrarAlumno', [AlumnosController::class, 'destroy']);
+Route::get('buscarAlumnosNombre', [AlumnosController::class, 'searchNombreCompleto']);
 
 Route::get('pedidos', [PedidosController::class, 'index']);
 Route::post('nuevoPedido', [PedidosController::class, 'store']);
+Route::post('nuevoPedidoAlumno', [PedidosController::class, 'storeAlumno']);
 Route::get('buscarPedidoNumeroDeControl', [PedidosController::class, 'show']);
 Route::post('entregarPedido', [PedidosController::class, 'destroy']);
-/*Route::post('editarAlumnos', [AlumnosController::class, 'update']);
-*/
+Route::get('buscarPedidoNumeroDeControlLike', [PedidosController::class, 'buscarNumeroControl']);
+
 Route::post('nuevoUsuario',[UsersController::class, 'store']);
 Route::get('iniciarSesion', [UsersController::class, 'iniciarSesion']);
 Route::get('buscarUsuario', [UsersController::class, 'show']);

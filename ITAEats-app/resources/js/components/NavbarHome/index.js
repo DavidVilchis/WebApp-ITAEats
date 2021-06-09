@@ -19,7 +19,7 @@ const NavbarComponent = () => {
                         <Nav.Link href="https://aguascalientes.tecnm.mx/" className="link-style">TecNM - ITA</Nav.Link>
                         <Nav.Link href="https://aguascalientes.tecnm.mx/sin-categoria/antecedentes-e-historia/" className="link-style">Nosotros</Nav.Link>
                         <NavDropdown title="Iniciar Sesión" id="basic-nav-dropdown" className="dropdown-style">
-                            <NavDropdown.Item as = {Link} to = "/WebApp-ITAEats/ITAEats-app/public/login">Estudiante - Profesor</NavDropdown.Item>
+                            <NavDropdown.Item as = {Link} to = "/WebApp-ITAEats/ITAEats-app/public/login">Estudiante</NavDropdown.Item>
                             <NavDropdown.Divider />
                             <NavDropdown.Item as = {Link} to = "/WebApp-ITAEats/ITAEats-app/public/login/cafeteria">Cafetería</NavDropdown.Item>
                         </NavDropdown>

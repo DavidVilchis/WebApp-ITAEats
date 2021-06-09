@@ -54,7 +54,9 @@ class UsersController extends Controller
     }
     public function iniciarSesion(Request $request)
     {
-        $dataMenu = DB::table('users')->where('usuario', '=', $request->usuario, 'and', 'password','=',$request->password)->get();
+        $dataMenu = DB::table('users')->where('usuario', $request->usuario)
+                                      ->where('password',$request->password)
+                                      ->where('tipoUsuario',$request->tipoUsuario)->get();
         return $dataMenu;
     }
     /**

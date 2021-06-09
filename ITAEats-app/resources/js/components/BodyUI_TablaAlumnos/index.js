@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import NavbarUI from '../NavbarUI_Cafeteria';
 import '../../../css/BodyUIStyle.css';
-import { CardColumns, Card, Toast, Button, Modal, Form, Table } from 'react-bootstrap';
+import { Toast, Button, Modal, Form, Table, Container, Row, Col } from 'react-bootstrap';
+import { FiEdit } from 'react-icons/fi';
+import { AiFillDelete } from 'react-icons/ai';
 import Axios from 'axios';
 
 const BodyUI = () => {
@@ -14,21 +16,17 @@ const BodyUI = () => {
         setShowUpdate(false);
         setTablaEdit([]);
     }
-    const handleShowUpdate = () => setShowUpdate(true);
-
-    const [showDelete, setShowDelete] = useState(false);
-    const handleCloseDelete = () => {
-        setShowDelete(false);
-        setTablaDelete([]);
+    const handleShowUpdate = (numeroDeControl) => {
+        dataEdit.numeroDeControl = numeroDeControl;
+        handleSearch();
+        setShowUpdate(true);
     }
-    const handleShowDelete = () => setShowDelete(true);
 
     const [showDialogConfirm, setShowDialogConfirm] = useState(false);
     const handleCloseDialogConfirm = () => setShowDialogConfirm(false);
-    const handleShowDialogConfirm = () => {
-        if (tablaDelete != []) {
-            setShowDialogConfirm(true);
-        }
+    const handleShowDialogConfirm = (numeroDeControl) => {
+        dataEdit.numeroDeControl = numeroDeControl;
+        setShowDialogConfirm(true);
     }
 
     const [showToastUpdate, setShowToastUpdate] = useState(false);
@@ -50,10 +48,14 @@ const BodyUI = () => {
         apellidoMaterno: '',
         claveCarrera: ''
     })
+    const [dataSearch, setDataSearch] = useState({
+        nombresBuscar: '',
+        apellidoPaternoBuscar: '',
+        apellidoMaternoBuscar: ''
+    })
 
     const [tabla, setTabla] = useState([]);
     const [tablaEdit, setTablaEdit] = useState([]);
-    const [tablaDelete, setTablaDelete] = useState([]);
 
     useEffect(() => {
         (async () => {
@@ -68,7 +70,19 @@ const BodyUI = () => {
             console.log(data)
         })();
     }, []);
-
+    const handleSearchNombreCompleto = async (e) => {
+        e.preventDefault();
+        await Axios({
+            method: 'get',
+            url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarAlumnosNombre?nombres='+dataSearch.nombresBuscar+'&apellidoPaterno='+dataSearch.apellidoPaternoBuscar+'&apellidoMaterno='+dataSearch.apellidoMaternoBuscar
+        })
+            .then(response => {
+                setTabla(response.data);
+            })
+            .catch(error => {
+                console.log("Error ", error);
+            })
+    }
     const handleSubmit = async (e) => {
         e.preventDefault();
         let formData = new FormData();
@@ -85,17 +99,16 @@ const BodyUI = () => {
                 config: { headers: { 'Content-Type': 'multipart/form-data' } }
             })
                 .then(response => {
-                    if (response.data.success == true) {
-                        console.log("Se agrego");
-                        setData({
-                            numeroDeControl: '',
-                            nombres: '',
-                            apellidoPaterno: '',
-                            apellidoMaterno: '',
-                            claveCarrera: ''
-                        })
-                        setShowToastAdd(true)
-                    }
+                    console.log("Se agrego");
+                    setData({
+                        numeroDeControl: '',
+                        nombres: '',
+                        apellidoPaterno: '',
+                        apellidoMaterno: '',
+                        claveCarrera: ''
+                    })
+                    setShowToastAdd(true);
+                    setTabla(response.data);
                 })
                 .catch(error => {
                     console.log('Error Login', error)
@@ -107,7 +120,6 @@ const BodyUI = () => {
         }
     }
     const handleSearch = async (e) => {
-        e.preventDefault();
         await Axios({
             method: 'get',
             url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarAlumnos?numeroDeControl=' + dataEdit.numeroDeControl
@@ -120,24 +132,10 @@ const BodyUI = () => {
                 console.log("Error ", error);
             })
     }
-    const handleSearchDelete = async (e) => {
-        e.preventDefault();
-        await Axios({
-            method: 'get',
-            url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarAlumnos?numeroDeControl=' + dataEdit.numeroDeControl
-        })
-            .then(response => {
-                console.log('response.data', response.data)
-                setTablaDelete(response.data);
-            })
-            .catch(error => {
-                console.log("Error ", error);
-            })
-    }
     const handleDelete = async (e) => {
         e.preventDefault();
         let formData = new FormData();
-        formData.append('numeroDeControl', tablaDelete[0]["numeroDeControl"]);
+        formData.append('numeroDeControl', dataEdit.numeroDeControl);
         await Axios({
             method: 'post',
             url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/borrarAlumno',
@@ -145,12 +143,10 @@ const BodyUI = () => {
             config: { headers: { 'Content-Type': 'multipart/form-data' } }
         })
             .then(response => {
-                if (response.data.success == true) {
-                    console.log("Se borro");
-                    handleCloseDialogConfirm();
-                    handleCloseDelete();
-                    setShowToastDelete(true)
-                }
+                console.log("Se borro");
+                handleCloseDialogConfirm();
+                setShowToastDelete(true);
+                setTabla(response.data);
             })
             .catch(error => {
                 console.log('Error ', error)
@@ -185,11 +181,10 @@ const BodyUI = () => {
             config: { headers: { 'Content-Type': 'multipart/form-data' } }
         })
             .then(response => {
-                if (response.data.success == true) {
-                    console.log("Se actualizo");
-                    handleCloseUpdate();
-                    setShowToastUpdate(true)
-                }
+                console.log("Se actualizo");
+                handleCloseUpdate();
+                setShowToastUpdate(true);
+                setTabla(response.data);
             })
             .catch(error => {
                 console.log('Error ', error)
@@ -205,6 +200,12 @@ const BodyUI = () => {
     const handleEditChange = (e) => {
         setDataEdit({
             ...dataEdit,
+            [e.target.name]: e.target.value
+        })
+    }
+    const handleSearchChange = async (e) => {
+        setDataSearch({
+            ...dataSearch,
             [e.target.name]: e.target.value
         })
     }
@@ -286,27 +287,19 @@ const BodyUI = () => {
                     <Modal.Title>Editar Alumno</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formBuscarPlatillo">
-                            <Form.Label>Buscar alumno</Form.Label>
-                            <Form.Control type="input" name="numeroDeControl" onChange={handleEditChange} placeholder="Ingrese el número de control" />
-                            <br />
-                            <Button variant="primary" onClick={handleSearch} >Buscar</Button>
-                        </Form.Group>
-                    </Form>
                     {tablaEdit.map(dataItem => (
                         <Form key={dataItem.numeroDeControl}>
                             <Form.Group controlId="formNombreCompleto">
                                 <Form.Label>Nombre(s)</Form.Label>
-                                <Form.Control type="input" name="nombres" onChange={handleEditChange} placeholder={dataItem.nombres} />
+                                <Form.Control type="input" name="nombres" onChange={handleEditChange} defaultValue={dataItem.nombres} />
                                 <Form.Label>Apellido paterno</Form.Label>
-                                <Form.Control type="input" name="apellidoPaterno" onChange={handleEditChange} placeholder={dataItem.apellidoPaterno} />
+                                <Form.Control type="input" name="apellidoPaterno" onChange={handleEditChange} defaultValue={dataItem.apellidoPaterno} />
                                 <Form.Label>Apellido materno</Form.Label>
-                                <Form.Control type="input" name="apellidoMaterno" onChange={handleEditChange} placeholder={dataItem.apellidoMaterno} />
+                                <Form.Control type="input" name="apellidoMaterno" onChange={handleEditChange} defaultValue={dataItem.apellidoMaterno} />
                             </Form.Group>
                             <Form.Group controlId="formClaveDeCarrera">
                                 <Form.Label>Clave de carrera</Form.Label>
-                                <Form.Control type="input" name="claveCarrera" placeholder={dataItem.claveCarrera} onChange={handleEditChange} />
+                                <Form.Control type="input" name="claveCarrera" defaultValue={dataItem.claveCarrera} onChange={handleEditChange} />
                             </Form.Group>
                             <center>
                                 <Button variant="danger" onClick={handleCloseUpdate}>
@@ -315,45 +308,6 @@ const BodyUI = () => {
                                 <Button variant="success" type="button" onClick={handleEdit}>
                                     Guardar cambios
                             </Button>
-                            </center>
-                        </Form>
-                    ))}
-                </Modal.Body>
-            </Modal>
-            <Modal show={showDelete} onHide={handleCloseDelete} backdrop="static" keyboard={false}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Borrar Alumno</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formBuscarPlatillo">
-                            <Form.Label>Buscar alumno</Form.Label>
-                            <Form.Control type="input" name="numeroDeControl" onChange={handleEditChange} placeholder="Ingrese el número de control" />
-                            <br />
-                            <Button variant="primary" onClick={handleSearchDelete} >Buscar</Button>
-                        </Form.Group>
-                    </Form>
-                    {tablaDelete.map(dataItem => (
-                        <Form key={dataItem.numeroDeControl}>
-                            <Form.Group controlId="formNombreCompleto">
-                                <Form.Label>Nombre(s)</Form.Label>
-                                <Form.Control type="input" name="nombres" disabled onChange={handleEditChange} value={dataItem.nombres} />
-                                <Form.Label>Apellido paterno</Form.Label>
-                                <Form.Control type="input" name="apellidoPaterno" disabled onChange={handleEditChange} value={dataItem.apellidoPaterno} />
-                                <Form.Label>Apellido materno</Form.Label>
-                                <Form.Control type="input" name="apellidoMaterno" disabled onChange={handleEditChange} value={dataItem.apellidoMaterno} />
-                            </Form.Group>
-                            <Form.Group controlId="formClaveDeCarrera">
-                                <Form.Label>Clave de carrera</Form.Label>
-                                <Form.Control type="input" name="claveCarrera" disabled value={dataItem.claveCarrera} onChange={handleEditChange} />
-                            </Form.Group>
-                            <center>
-                                <Button variant="danger" onClick={handleCloseDelete}>
-                                        Cancelar
-                                </Button>{' '}
-                                    <Button variant="warning" type="button" onClick={handleShowDialogConfirm}>
-                                        Eliminar
-                                </Button>
                             </center>
                         </Form>
                     ))}
@@ -370,30 +324,48 @@ const BodyUI = () => {
                     </center>
                 </Modal.Body>
             </Modal>
-            <div className="container" id="body-style">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="row">
-                            <div className="col-md-12">
+            <Container id="body-style">
+                <Row>
+                    <Col md="12">
+                        <Row>
+                            <Col md="12">
                                 <h1>Tabla de alumnos</h1>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-3">
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md="2">
                                 <Button variant="success" onClick={handleShowAdd} block>Nuevo Alumno</Button> {' '}
-                            </div>
-                            <div className="col-md-3">
-                                <Button variant="primary" onClick={handleShowUpdate} block>Editar Alumno</Button> {' '}
-                            </div>
-                            <div className="col-md-3">
-                                <Button variant="danger" onClick={handleShowDelete} block>Borrar Alumno</Button> {' '}
-                            </div>
-                            <div className="col-md-3">
-                                <Button variant="secondary" onClick={() => window.location.reload(false)} block>Refrescar</Button>
-                            </div>
-                        </div>
+                            </Col>
+                        </Row>
                         <br />
-                        <div className="row">
+                        <Row>
+                            <Col md="3">
+                                <Form>
+                                    <Form.Group controlId="formNombres">
+                                        <Form.Control type="input" name="nombresBuscar" onChange={handleSearchChange} placeholder="Buscar por nombre(s)" />
+                                    </Form.Group>
+                                </Form>
+                            </Col>
+                            <Col md="3">
+                                <Form>
+                                    <Form.Group controlId="formApellidoPaterno">
+                                        <Form.Control type="input" name="apellidoPaternoBuscar" onChange={handleSearchChange} placeholder="Buscar por apellido paterno" />
+                                    </Form.Group>
+                                </Form>
+                            </Col>
+                            <Col md="3">
+                                <Form>
+                                    <Form.Group controlId="formApellidoMaterno">
+                                        <Form.Control type="input" name="apellidoMaternoBuscar" onChange={handleSearchChange} placeholder="Buscar por apellido materno" />
+                                    </Form.Group>
+                                </Form>
+                            </Col>
+                            <Col md="3">
+                                <Button variant="primary" onClick={handleSearchNombreCompleto}>Buscar</Button> {' '}
+                            </Col>
+                        </Row>
+                        <br />
+                        <Row>
                             <Table striped bordered hover variant="dark" size="sm">
                                 <thead>
                                     <tr>
@@ -408,14 +380,18 @@ const BodyUI = () => {
                                             <td>{dataItem.numeroDeControl}</td>
                                             <td>{dataItem.nombres + " " + dataItem.apellidoPaterno + " " + dataItem.apellidoMaterno}</td>
                                             <td>{dataItem.claveCarrera}</td>
+                                            <td>
+                                                <Button variant="primary" onClick={() => handleShowUpdate(dataItem.numeroDeControl)} block><FiEdit/> Editar</Button> {'  '}
+                                                <Button variant="danger" onClick={() => handleShowDialogConfirm(dataItem.numeroDeControl)} block><AiFillDelete/> Borrar</Button>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </Table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        </Row>
+                    </Col>
+                </Row>
+            </Container>
         </>
     );
 };

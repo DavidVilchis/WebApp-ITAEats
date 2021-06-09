@@ -49,12 +49,11 @@ class AlumnosController extends Controller
         $alumnos->claveCarrera = $request->claveCarrera;
         $result = $alumnos->save();
         if($result){
-            $response['success'] = true;
+            return Alumnos::all();
         }
         else{
-            $response['success'] = false;
+            return null;
         }
-        return $response;
     }
 
     /**
@@ -95,12 +94,11 @@ class AlumnosController extends Controller
                 ->update(['nombres' => $request->nombres, 'apellidoPaterno' => $request->apellidoPaterno, 
                         'apellidoMaterno' => $request->apellidoMaterno, 'claveCarrera' => $request->claveCarrera]);
         if($result){
-           $response['success'] = true;
+           return Alumnos::all();
         }
         else{
-            $response['success'] = false;
+            return null;
         }
-        return $response;
     }
 
     /**
@@ -114,16 +112,23 @@ class AlumnosController extends Controller
         //Borrar alumnos mediante el número de control
         $result = DB::table('alumnos')->where('numeroDeControl', $request->numeroDeControl)->delete();
         if($result){
-            $response['success'] = true;
+            return Alumnos::all();
          }
          else{
-             $response['success'] = false;
+             return null;
          }
-         return $response;
     }
 
     public function iniciarSesion(Request $request){
         $dataAlumnos = DB::table('alumnos')->where('numeroDeControl', $request->numeroDeControl)->get();
+        return $dataAlumnos;
+    }
+    public function searchNombreCompleto(Request $request){
+        $dataAlumnos = DB::table('alumnos')
+        ->where('nombres', 'like', $request->nombres . '%')
+        ->where('apellidoPaterno', 'like', $request->apellidoPaterno . '%')
+        ->where('apellidoMaterno', 'like', $request->apellidoMaterno . '%')
+        ->get();
         return $dataAlumnos;
     }
 }

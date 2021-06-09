@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NavbarUI from '../NavbarUI';
 import '../../../css/BodyProfileStyle.css';
-import { CardColumns, Card, Button, Table, Form, Image } from 'react-bootstrap';
+import { Table, Image, Container, Row, Col } from 'react-bootstrap';
 import Axios from 'axios';
 
 const BodyProfile = () => {
@@ -11,7 +11,7 @@ const BodyProfile = () => {
         (async () => {
             const response = await Axios({
                 method: 'get',
-                url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarAlumnos?numeroDeControl='+localStorage.getItem('numeroDeControl')
+                url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarAlumnos?numeroDeControl=' + localStorage.getItem('numeroDeControl')
             })
                 .then(response => {
                     console.log('response.data', response.data)
@@ -23,14 +23,14 @@ const BodyProfile = () => {
     return (
         <>
             <NavbarUI />
-            <div className="container" id="body-style">
+            <Container id="body-style">
                 <h1>Perfil</h1>
                 <br /><br />
-                <div className="row">
-                    <div className="col-md-6">
+                <Row>
+                    <Col md="6">
                         <Image src="/WebApp-ITAEats/ITAEats-app/resources/images/LogoTecNM.png" fluid />
-                    </div>
-                    <div className="col-md-6 pd-5">
+                    </Col>
+                    <Col md="6" pd="5">
                         {data.map(dataItem => (
                             <Table variant="dark" size="sm" key={dataItem.numeroDeControl}>
                                 <thead>
@@ -66,9 +66,9 @@ const BodyProfile = () => {
                                 </tbody>
                             </Table>
                         ))}
-                    </div>
-                </div>
-            </div>
+                    </Col>
+                </Row>
+            </Container>
         </>
     );
 };

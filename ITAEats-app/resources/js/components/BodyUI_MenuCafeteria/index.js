@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import NavbarUI from '../NavbarUI_Cafeteria';
 import '../../../css/BodyUIStyle.css';
-import { Toast, Image, Button, Modal, Form, Table } from 'react-bootstrap';
+import { Toast, Image, Button, Modal, Form, Table, Container, Row, Col } from 'react-bootstrap';
+import { FiEdit } from 'react-icons/fi';
+import { AiFillDelete } from 'react-icons/ai';
 import Axios from 'axios';
 
 const BodyUI = () => {
@@ -15,21 +17,19 @@ const BodyUI = () => {
         setTablaEdit([]);
         setSelectedFileEdit(null);
     }
-    const handleShowUpdate = () => setShowUpdate(true);
-
-    const [showDelete, setShowDelete] = useState(false);
-    const handleCloseDelete = () => {
-        setShowDelete(false);
-        setTablaDelete([]);
+    const handleShowUpdate = (idDePlatillo) => {
+        dataEdit.idDePlatillo = idDePlatillo;
+        handleSearch();
+        setShowUpdate(true);
     }
-    const handleShowDelete = () => setShowDelete(true);
+
 
     const [showDialogConfirm, setShowDialogConfirm] = useState(false);
     const handleCloseDialogConfirm = () => setShowDialogConfirm(false);
-    const handleShowDialogConfirm = () => {
-        if (tablaDelete != []) {
-            setShowDialogConfirm(true);
-        }
+    const handleShowDialogConfirm = (idDePlatillo) => {
+        dataEdit.idDePlatillo = idDePlatillo;
+        console.log(dataEdit.idDePlatillo);
+        setShowDialogConfirm(true);
     }
 
     const [showToastUpdate, setShowToastUpdate] = useState(false);
@@ -50,10 +50,12 @@ const BodyUI = () => {
         precio: '',
         fotoDePlatillo: ''
     })
+    const [dataSearch, setDataSearch] = useState({
+        nombrePlatilloBuscar: ''
+    })
 
     const [tabla, setTabla] = useState([]);
     const [tablaEdit, setTablaEdit] = useState([]);
-    const [tablaDelete, setTablaDelete] = useState([]);
 
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileEdit, setSelectedFileEdit] = useState(null);
@@ -88,16 +90,15 @@ const BodyUI = () => {
                 config: { headers: { 'Content-Type': 'multipart/form-data' } }
             })
                 .then(response => {
-                    if (response.data.success == true) {
-                        console.log("Se agrego");
-                        setData({
-                            nombreDePlatillo: '',
-                            descripcionDePlatillo: '',
-                            precio: '',
-                            fotoDePlatillo: ''
-                        })
-                        setShowToastAdd(true)
-                    }
+                    console.log("Se agrego");
+                    setData({
+                        nombreDePlatillo: '',
+                        descripcionDePlatillo: '',
+                        precio: '',
+                        fotoDePlatillo: ''
+                    })
+                    setShowToastAdd(true);
+                    setTabla(response.data);
                 })
                 .catch(error => {
                     console.log('Error Login', error)
@@ -108,8 +109,20 @@ const BodyUI = () => {
             handleShowAdd(true);
         }
     }
-    const handleSearch = async (e) => {
+    const handleSearchNombreDePlatillo = async (e) => {
         e.preventDefault();
+        await Axios({
+            method: 'get',
+            url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarPlatilloNombre?nombreDePlatillo=' + dataSearch.nombrePlatilloBuscar
+        })
+            .then(response => {
+                setTabla(response.data);
+            })
+            .catch(error => {
+                console.log("Error ", error);
+            })
+    }
+    const handleSearch = async (e) => {
         await Axios({
             method: 'get',
             url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarPlatillo?idDePlatillo=' + dataEdit.idDePlatillo
@@ -123,25 +136,10 @@ const BodyUI = () => {
                 console.log("Error ", error);
             })
     }
-    const handleSearchDelete = async (e) => {
-        e.preventDefault();
-        await Axios({
-            method: 'get',
-            url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarPlatillo?idDePlatillo=' + dataEdit.idDePlatillo
-        })
-            .then(response => {
-                console.log('response.data', response.data)
-                console.log('response.data.fotoDePlatillo', response.data[0]["fotoDePlatillo"])
-                setTablaDelete(response.data);
-            })
-            .catch(error => {
-                console.log("Error ", error);
-            })
-    }
     const handleDelete = async (e) => {
         e.preventDefault();
         let formData = new FormData();
-        formData.append('idDePlatillo', tablaDelete[0]["idDePlatillo"]);
+        formData.append('idDePlatillo', dataEdit.idDePlatillo);
         await Axios({
             method: 'post',
             url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/borrarPlatillo',
@@ -149,12 +147,10 @@ const BodyUI = () => {
             config: { headers: { 'Content-Type': 'multipart/form-data' } }
         })
             .then(response => {
-                if (response.data.success == true) {
-                    console.log("Se borro");
-                    handleCloseDialogConfirm();
-                    handleCloseDelete();
-                    setShowToastDelete(true)
-                }
+                console.log("Se borro");
+                handleCloseDialogConfirm();
+                setShowToastDelete(true);
+                setTabla(response.data);
             })
             .catch(error => {
                 console.log('Error ', error)
@@ -192,11 +188,10 @@ const BodyUI = () => {
             config: { headers: { 'Content-Type': 'multipart/form-data' } }
         })
             .then(response => {
-                if (response.data.success == true) {
-                    console.log("Se actualizo");
-                    handleCloseUpdate();
-                    setShowToastUpdate(true)
-                }
+                setTabla(response.data);
+                console.log("Se actualizo");
+                handleCloseUpdate();
+                setShowToastUpdate(true)
             })
             .catch(error => {
                 console.log('Error ', error)
@@ -212,6 +207,12 @@ const BodyUI = () => {
     const handleEditChange = (e) => {
         setDataEdit({
             ...dataEdit,
+            [e.target.name]: e.target.value
+        })
+    }
+    const handleSearchChange = async (e) => {
+        setDataSearch({
+            ...dataSearch,
             [e.target.name]: e.target.value
         })
     }
@@ -292,27 +293,19 @@ const BodyUI = () => {
                     <Modal.Title>Editar platillo</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formBuscarPlatillo">
-                            <Form.Label>Buscar platillo</Form.Label>
-                            <Form.Control type="input" name="idDePlatillo" onChange={handleEditChange} placeholder="Ingrese el ID de platillo" />
-                            <br />
-                            <Button variant="primary" onClick={handleSearch} >Buscar</Button>
-                        </Form.Group>
-                    </Form>
                     {tablaEdit.map(dataItem => (
                         <Form key={dataItem.idDePlatillo}>
                             <Form.Group controlId="formNombrePlatillo">
                                 <Form.Label>Nombre del platillo</Form.Label>
-                                <Form.Control type="input" name="nombreDePlatillo" onChange={handleEditChange} placeholder={dataItem.nombreDePlatillo} />
+                                <Form.Control type="input" name="nombreDePlatillo" onChange={handleEditChange} defaultValue={dataItem.nombreDePlatillo} />
                             </Form.Group>
                             <Form.Group controlId="formDescripcionDePlatillo">
                                 <Form.Label>Descripcion del platillo</Form.Label>
-                                <Form.Control as="textarea" rows={3} name="descripcionDePlatillo" placeholder={dataItem.descripcionDePlatillo} onChange={handleEditChange} />
+                                <Form.Control as="textarea" rows={3} name="descripcionDePlatillo" defaultValue={dataItem.descripcionDePlatillo} onChange={handleEditChange} />
                             </Form.Group>
                             <Form.Group controlId="formPrecio">
                                 <Form.Label>Precio del platillo</Form.Label>
-                                <Form.Control type="input" name="precio" onChange={handleEditChange} placeholder={dataItem.precio} />
+                                <Form.Control type="input" name="precio" onChange={handleEditChange} defaultValue={dataItem.precio} />
                             </Form.Group>
                             <Form.Group controlId="formFileSelect">
                                 <Form.File id="formControlFile" name="fotoDePlatillo" onChange={(e) => setSelectedFileEdit(e.target.files[0])} label="Selecciona una foto del platillo" />
@@ -329,45 +322,6 @@ const BodyUI = () => {
                     ))}
                 </Modal.Body>
             </Modal>
-            <Modal show={showDelete} onHide={handleCloseDelete} backdrop="static" keyboard={false}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Borrar platillo</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formBuscarPlatillo">
-                            <Form.Label>Buscar platillo</Form.Label>
-                            <Form.Control type="input" name="idDePlatillo" onChange={handleEditChange} placeholder="Ingrese el ID de platillo" />
-                            <br />
-                            <Button variant="primary" onClick={handleSearchDelete} >Buscar</Button>
-                        </Form.Group>
-                    </Form>
-                    {tablaDelete.map(dataItem => (
-                        <Form key={dataItem.idDePlatillo}>
-                            <Form.Group controlId="formNombrePlatillo">
-                                <Form.Label>Nombre del platillo</Form.Label>
-                                <Form.Control type="input" name="nombreDePlatillo" disabled value={dataItem.nombreDePlatillo} />
-                            </Form.Group>
-                            <Form.Group controlId="formDescripcionDePlatillo">
-                                <Form.Label>Descripcion del platillo</Form.Label>
-                                <Form.Control as="textarea" rows={3} name="descripcionDePlatillo" disabled value={dataItem.descripcionDePlatillo} onChange={handleEditChange} />
-                            </Form.Group>
-                            <Form.Group controlId="formPrecio">
-                                <Form.Label>Precio del platillo</Form.Label>
-                                <Form.Control type="input" name="precio" disabled value={dataItem.precio} />
-                            </Form.Group>
-                            <center>
-                                <Button variant="danger" onClick={handleCloseDelete}>
-                                        Cancelar
-                                </Button>{' '}
-                                    <Button variant="warning" type="button" onClick={handleShowDialogConfirm}>
-                                        Eliminar
-                                </Button>
-                            </center>
-                        </Form>
-                    ))}
-                </Modal.Body>
-            </Modal>
             <Modal centered size="sm" show={showDialogConfirm} onHide={handleCloseDialogConfirm} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>¿Está seguro de eliminar el registro?</Modal.Title>
@@ -379,58 +333,65 @@ const BodyUI = () => {
                     </center>
                 </Modal.Body>
             </Modal>
-            <div className="container" id="body-style">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="row">
-                            <div className="col-md-12">
+            <Container id="body-style">
+                <Row>
+                    <Col md="12">
+                        <Row>
+                            <Col md="12">
                                 <h1>Menú de cafetería</h1>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-3">
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md="2">
                                 <Button variant="success" onClick={handleShowAdd} block>Nuevo platillo</Button> {' '}
-                            </div>
-                            <div className="col-md-3">
-                                <Button variant="primary" onClick={handleShowUpdate} block>Editar platillo</Button> {' '}
-                            </div>
-                            <div className="col-md-3">
-                                <Button variant="danger" onClick={handleShowDelete} block>Borrar platillo</Button> {' '}
-                            </div>
-                            <div className="col-md-3">
-                                <Button variant="secondary" onClick={() => window.location.reload(false)} block>Refrescar</Button>
-                            </div>
-                        </div>
+                            </Col>
+                        </Row>
                         <br />
-                        <div className="row">
+                        <Row>
+                            <Col md="3">
+                                <Form>
+                                    <Form.Group controlId="buscarNombre">
+                                        <Form.Control variant="input" name="nombrePlatilloBuscar" onChange={handleSearchChange} placeholder="Buscar nombre del platillo" />
+                                    </Form.Group>
+                                </Form>
+                            </Col>
+                            <Col md="6">
+                                <Button variant="primary" onClick={handleSearchNombreDePlatillo}>Buscar</Button>
+                            </Col>
+                        </Row>
+                        <br />
+                        <Row>
                             <Table striped bordered hover variant="dark" size="sm">
                                 <thead>
                                     <tr>
-                                        <th>Id. Platillo</th>
                                         <th>Nombre del platillo</th>
                                         <th>Descripción del platillo</th>
                                         <th>Precio</th>
                                         <th>Foto de platillo</th>
+                                        <th>Opciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {tabla.map(dataItem => (
                                         <tr key={dataItem.idDePlatillo}>
-                                            <td>{dataItem.idDePlatillo}</td>
                                             <td>{dataItem.nombreDePlatillo}</td>
                                             <td>{dataItem.descripcionDePlatillo}</td>
-                                            <td>{dataItem.precio}</td>
+                                            <td>${dataItem.precio}</td>
                                             <td>
                                                 <Image src={"/WebApp-ITAEats/ITAEats-app/resources/images/Platillos/" + dataItem.fotoDePlatillo} width={150} />
+                                            </td>
+                                            <td>
+                                                <Button variant="primary" block onClick={() => handleShowUpdate(dataItem.idDePlatillo)}><FiEdit/> Editar</Button> {'  '}
+                                                <Button variant="danger" block onClick={() => handleShowDialogConfirm(dataItem.idDePlatillo)}><AiFillDelete/> Borrar</Button>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </Table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        </Row>
+                    </Col>
+                </Row>
+            </Container>
         </>
     );
 };

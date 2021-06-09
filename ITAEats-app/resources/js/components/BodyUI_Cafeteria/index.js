@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import NavbarUI from '../NavbarUI_Cafeteria';
 import '../../../css/BodyUIStyle.css';
-import { Toast, Button, Modal, Form, Table } from 'react-bootstrap';
+import { Toast, Button, Modal, Form, Table, Container, Row, Col } from 'react-bootstrap';
+import { BsCheck } from 'react-icons/bs';
 import Axios from 'axios';
 
 const BodyUI = () => {
@@ -12,19 +13,12 @@ const BodyUI = () => {
         setShowAdd(true);
     }
 
-    const [showDelete, setShowDelete] = useState(false);
-    const handleCloseDelete = () => {
-        setShowDelete(false);
-        setTablaDelete([]);
-    }
-    const handleShowDelete = () => setShowDelete(true);
-
     const [showDialogConfirm, setShowDialogConfirm] = useState(false);
     const handleCloseDialogConfirm = () => setShowDialogConfirm(false);
-    const handleShowDialogConfirm = () => {
-        if (tablaDelete != []) {
-            setShowDialogConfirm(true);
-        }
+    const handleShowDialogConfirm = (numeroDeControl, idDePlatillo) => {
+        dataEdit.numeroDeControl = numeroDeControl;
+        dataEdit.idDePlatillo = idDePlatillo;
+        setShowDialogConfirm(true);
     }
 
     const [showToastUpdate, setShowToastUpdate] = useState(false);
@@ -32,8 +26,7 @@ const BodyUI = () => {
     const [showToastDelete, setShowToastDelete] = useState(false);
     const [showToastErrorAdd, setShowToastErrorAdd] = useState(false);
     const [showToastErrorSearch, setShowToastErrorSearch] = useState(false);
-    const [showToastErrorSend, setShowToastErrorSend] = useState(false);
-    
+
 
     const [data, setData] = useState({
         idDePlatillo: '',
@@ -43,10 +36,34 @@ const BodyUI = () => {
         idDePlatillo: '',
         numeroDeControl: '',
     })
+    const [dataSearch, setDataSearch] = useState({
+        numeroDeControlBuscar: ''
+    })
 
     const [tabla, setTabla] = useState([]);
-    const [tablaDelete, setTablaDelete] = useState([]);
     const [tablaPlatillos, setTablaPlatillos] = useState([]);
+
+    const handleSearchNumeroDeControl = async (e) => {
+        e.preventDefault();
+        await Axios({
+            method: 'get',
+            url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarPedidoNumeroDeControlLike?numeroDeControl=' + dataSearch.numeroDeControlBuscar
+        })
+            .then(response => {
+                setTabla(response.data);
+            })
+            .catch(error => {
+                console.log("Error ", error);
+            })
+    }
+    
+    const handleSearchChange = async (e) => {
+        setDataSearch({
+            ...dataSearch,
+            [e.target.name]: e.target.value
+        })
+    }
+    
 
     useEffect(() => {
         (async () => {
@@ -98,15 +115,14 @@ const BodyUI = () => {
                             config: { headers: { 'Content-Type': 'multipart/form-data' } }
                         })
                             .then(response => {
-                                if (response.data.success == true) {
-                                    console.log("Se agrego");
-                                    setData({
-                                        idDePlatillo: '',
-                                        numeroDeControl: ''
-                                    })
-                                    setShowToastAdd(true);
-                                    handleCloseAdd();
-                                }
+                                console.log("Se agrego");
+                                setData({
+                                    idDePlatillo: '',
+                                    numeroDeControl: ''
+                                })
+                                setShowToastAdd(true);
+                                handleCloseAdd();
+                                setTabla(response.data);
                             })
                             .catch(error => {
                                 console.log('Error Login', error)
@@ -121,25 +137,10 @@ const BodyUI = () => {
             setShowToastErrorAdd(true);
         }
     }
-    const handleSearchDelete = async (e) => {
-        e.preventDefault();
-        await Axios({
-            method: 'get',
-            url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/buscarPedidoNumeroDeControl?numeroDeControl=' + dataEdit.numeroDeControl
-        })
-            .then(response => {
-                console.log('response.data', response.data)
-                setTablaDelete(response.data);
-            })
-            .catch(error => {
-                console.log("Error ", error);
-            })
-    }
     const handleDelete = async (e) => {
         e.preventDefault();
         let formData = new FormData();
-        if (dataEdit.idDePlatillo != "" && tablaDelete != []) {
-            formData.append('numeroDeControl', tablaDelete[0]["numeroDeControl"]);
+            formData.append('numeroDeControl', dataEdit.numeroDeControl);
             formData.append('idDePlatillo', dataEdit.idDePlatillo);
             await Axios({
                 method: 'post',
@@ -148,32 +149,19 @@ const BodyUI = () => {
                 config: { headers: { 'Content-Type': 'multipart/form-data' } }
             })
                 .then(response => {
-                    if (response.data.success == true) {
-                        console.log("Se borro");
-                        handleCloseDialogConfirm();
-                        handleCloseDelete();
-                        setShowToastDelete(true)
-                    }
+                    console.log("Se borro");
+                    handleCloseDialogConfirm();
+                    setShowToastDelete(true)
+                    setTabla(response.data);
                 })
                 .catch(error => {
                     console.log('Error ', error)
                 })
-        }
-        else{
-            handleCloseDialogConfirm();
-            setShowToastErrorSend(true);
-        }
     }
 
     const handleInputChange = (e) => {
         setData({
             ...data,
-            [e.target.name]: e.target.value
-        })
-    }
-    const handleEditChange = (e) => {
-        setDataEdit({
-            ...dataEdit,
             [e.target.name]: e.target.value
         })
     }
@@ -257,46 +245,6 @@ const BodyUI = () => {
                     </Form>
                 </Modal.Body>
             </Modal>
-            <Modal show={showDelete} onHide={handleCloseDelete} backdrop="static" keyboard={false}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Entregar pedido</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <center>
-                            <br />
-                            <Toast onClose={() => setShowToastErrorSend(false)} show={showToastErrorSend} delay={1000} autohide>
-                                <Toast.Header>
-                                    <strong className="mr-auto">¡Error!</strong>
-                                </Toast.Header>
-                                <Toast.Body>¡Verifique los campos!</Toast.Body>
-                            </Toast>
-                            <br />
-                        </center>
-                        <Form.Group controlId="formBuscarPlatillo">
-                            <Form.Label>Buscar alumno</Form.Label>
-                            <Form.Control type="input" name="numeroDeControl" onChange={handleEditChange} placeholder="Ingrese el número de control" />
-                            <br />
-                            <Button variant="primary" onClick={handleSearchDelete} >Buscar</Button>
-                        </Form.Group>
-                    </Form>
-                    <Form.Control as="select" name="idDePlatillo" onChange={handleEditChange}>
-                        <option>Seleccione un pedido</option>
-                        {tablaDelete.map(dataItem => (
-                            <option key={dataItem.idDePlatillo} value={dataItem.idDePlatillo}>{dataItem.nombreDePlatillo}</option>
-                        ))}
-                    </Form.Control>
-                    <center>
-                        <br />
-                        <Button variant="danger" onClick={handleCloseDelete}>
-                            Cancelar
-                        </Button>{' '}
-                        <Button variant="outline-success" type="button" onClick={handleShowDialogConfirm}>
-                            Entregar pedido
-                        </Button>
-                    </center>
-                </Modal.Body>
-            </Modal>
             <Modal centered size="sm" show={showDialogConfirm} onHide={handleCloseDialogConfirm} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>¿Está seguro de entregar este pedido?</Modal.Title>
@@ -308,31 +256,37 @@ const BodyUI = () => {
                     </center>
                 </Modal.Body>
             </Modal>
-            <div className="container" id="body-style">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="row">
-                            <div className="col-md-12">
+            <Container id="body-style">
+                <Row>
+                    <Col md="12">
+                        <Row>
+                            <Col md="12">
                                 <h1>Tabla de pedidos</h1>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-3">
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md="3">
                                 <Button variant="success" onClick={handleShowAdd} block>Nuevo Pedido</Button> {' '}
-                            </div>
-                            <div className="col-md-3">
-                                <Button variant="outline-info" onClick={handleShowDelete} block>Entregar Pedido</Button> {' '}
-                            </div>
-                            <div className="col-md-3">
-                                <Button variant="secondary" onClick={() => window.location.reload(false)} block>Refrescar</Button>
-                            </div>
-                        </div>
+                            </Col>
+                        </Row>
+                        <br/>
+                        <Row>
+                            <Col md="3">
+                                <Form>
+                                    <Form.Group controlId="formBuscarPorNumeroControl">
+                                        <Form.Control type="input" name="numeroDeControlBuscar" onChange={handleSearchChange} placeholder="Buscar por número de control" />
+                                    </Form.Group>
+                                </Form>
+                            </Col>
+                            <Col md="3">
+                                <Button variant="primary" onClick={handleSearchNumeroDeControl}>Buscar</Button>
+                            </Col>
+                        </Row>
                         <br />
-                        <div className="row">
+                        <Row>
                             <Table striped bordered hover variant="dark" size="sm">
                                 <thead>
                                     <tr>
-                                        <th>ID de platillo</th>
                                         <th>Número de control</th>
                                         <th>Fecha</th>
                                         <th>Nombre del platillo</th>
@@ -341,18 +295,20 @@ const BodyUI = () => {
                                 <tbody>
                                     {tabla.map(dataItem => (
                                         <tr key={dataItem.idDePlatillo + " " + dataItem.numeroDeControl}>
-                                            <td>{dataItem.idDePlatillo}</td>
                                             <td>{dataItem.numeroDeControl}</td>
                                             <td>{dataItem.created_at}</td>
                                             <td>{dataItem.nombreDePlatillo}</td>
+                                            <td>
+                                                <Button variant="outline-info" onClick={() => handleShowDialogConfirm(dataItem.numeroDeControl, dataItem.idDePlatillo)} block>Entregar Pedido <BsCheck /></Button> {' '}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </Table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        </Row>
+                    </Col>
+                </Row>
+            </Container>
         </>
     );
 };

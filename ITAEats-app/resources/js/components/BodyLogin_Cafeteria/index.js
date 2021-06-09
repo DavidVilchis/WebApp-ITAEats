@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Image, CardColumns, Card, Toast, Button, Modal, Form, Table } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Image, Button, Form, Container, Col, Row } from 'react-bootstrap';
 import Axios from 'axios';
 import { useHistory } from 'react-router-dom'
 import '../../../css/BodyLoginStyle.css';
@@ -16,7 +16,7 @@ const BodyUI = () => {
         e.preventDefault();
         const response = await Axios({
             method: 'get',
-            url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/iniciarSesion?usuario=' + usuario.usuario + '&password=' + usuario.password
+            url: 'http://localhost/WebApp-ITAEats/ITAEats-app/public/api/iniciarSesion?usuario=' + usuario.usuario + '&password=' + usuario.password + '&tipoUsuario=cafeteria'
         })
             .then(response => {
                 console.log('response.data', response.data)
@@ -35,21 +35,21 @@ const BodyUI = () => {
     }
     return (
         <>
-            <div className="container" id="container-style">
-                <div className="row">
+            <Container id="container-style">
+                <Row>
                     <div className="col-md-12">
                         <h1 className="title">Iniciar sesión / Cafetería</h1>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-12">
+                </Row>
+                <Row>
+                    <Col md="12">
                         <center>
                             <Image src="/WebApp-ITAEats/ITAEats-app/resources/images/user1.png" width="160" height="160" />
                         </center>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-12">
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md="12">
                         <Form>
                             <Form.Group type="input" controlId="formNumeroDeControl">
                                 <Form.Label>Nombre de usuario</Form.Label>
@@ -60,14 +60,14 @@ const BodyUI = () => {
                                 <Form.Control type="password" name="password" onChange={handleInputChange} placeholder="Contraseña" />
                             </Form.Group>
                         </Form>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-12">
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md="12">
                         <Button variant="success" onClick={handleSearch} block>Iniciar sesión</Button>
-                    </div>
-                </div>
-            </div>
+                    </Col>
+                </Row>
+            </Container>
         </>
     );
 };

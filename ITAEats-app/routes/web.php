@@ -39,6 +39,7 @@ Route::get('/inicio/cafeteria/menu', function (){
 Route::get('/inicio/cafeteria/alumnos', function (){
     return view('welcome');
 });
+
 Route::get('/api/mostrarPlatillos', [MenuController::class, 'index']);
 
 

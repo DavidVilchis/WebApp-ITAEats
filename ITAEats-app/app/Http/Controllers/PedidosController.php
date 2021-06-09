@@ -47,8 +47,28 @@ class PedidosController extends Controller
         $pedido->idDePlatillo =  $request->idDePlatillo;
         $pedido->numeroDeControl = $request->numeroDeControl;
         $result = $pedido->save();
-        $response['success'] = true;
-        return $response;
+        $pedidos = DB::table('pedidos')->join('menu','pedidos.idDePlatillo','=','menu.idDePlatillo')->get();
+        if($result){
+            return $pedidos;
+        }
+        else{
+            return null;
+        }
+    }
+    public function storeAlumno(Request $request)
+    {
+        //Ingresar un nuevo registro
+        $pedido = new Pedidos;
+        $pedido->idDePlatillo =  $request->idDePlatillo;
+        $pedido->numeroDeControl = $request->numeroDeControl;
+        $result = $pedido->save();
+        $pedidos = DB::table('pedidos')->join('menu','pedidos.idDePlatillo','=','menu.idDePlatillo')->where('numeroDeControl', $request->numeroDeControl)->get();
+        if($result){
+            return $pedidos;
+        }
+        else{
+            return null;
+        }
     }
 
     /**
@@ -61,6 +81,12 @@ class PedidosController extends Controller
     {
         $dataMenu = DB::table('pedidos')->join('menu','pedidos.idDePlatillo','=','menu.idDePlatillo')->where('numeroDeControl', $request->numeroDeControl)->get();
         return $dataMenu;
+    }
+
+    public function buscarNumeroControl(Request $request)
+    {
+        $pedidos = DB::table('pedidos')->join('menu','pedidos.idDePlatillo','=','menu.idDePlatillo')->where('numeroDeControl','like',$request->numeroDeControl . '%')->get();
+        return $pedidos;
     }
 
     /**
@@ -105,13 +131,13 @@ class PedidosController extends Controller
     public function destroy(Request $request)
     {
         //Borrar alumnos mediante el número de control
-        $result = DB::table('pedidos')->where('idDePlatillo','=', $request->idDePlatillo,'and', 'numeroDeControl','=', $request->numeroDeControl)->delete();
+        $result = DB::table('pedidos')->where('idDePlatillo', $request->idDePlatillo)->where('numeroDeControl', $request->numeroDeControl)->delete();
+        $pedidos = DB::table('pedidos')->join('menu','pedidos.idDePlatillo','=','menu.idDePlatillo')->get();
         if($result){
-            $response['success'] = true;
+            return $pedidos;
         }
         else{
-            $response['success'] = false;
+            return null;
         }
-        return $response;
     }
 }
